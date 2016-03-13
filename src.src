@@ -1,0 +1,4 @@
+
+skelex = [ files bat gitignore ]
+files = [ src log ypp lpp hpp cpp ]
+
