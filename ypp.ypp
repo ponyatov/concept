@@ -1,6 +1,6 @@
 %{
 #include "hpp.hpp"
-Sym module("module",MODULE);
+Module unit(MODULE);
 %}
 %defines %union { Sym*o; }
 %token <o> SYM STR NUM DOC
@@ -8,7 +8,7 @@ Sym module("module",MODULE);
 %token <o> EQ AT
 %type <o> ex scalar list
 %%
-REPL: | REPL ex 	{ module.push($2); } ;
+REPL: | REPL ex 	{ unit.push($2); } ;
 ex	: scalar
 	| ex DOC		{ $$=$1; $$->par["doc"]=$2; }
 	| LQ list RQ	{ $$=$2; }
@@ -16,6 +16,8 @@ ex	: scalar
 	| ex AT ex		{ $$=$2; $$->push($1); $$->push($3); }	
 ;
 scalar : SYM | STR | NUM ;
-list :				{ $$=new List(); }
-	 | list ex		{ $$=$1; $$->push($2); } ;
+list:				{ $$=new List(); }
+	| list ex		{ $$=$1; $$->push($2); } 
+	| list DOC		{ $$=$1; $$->par["doc"]=$2; }
+;
 %%

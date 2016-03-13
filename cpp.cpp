@@ -1,7 +1,7 @@
 #include "hpp.hpp"
 #define YYERR "\n\n"<<yylineno<<":"<<msg<<"["<<yytext<<"]\n\n"
 void yyerror(string msg) { cout<<YYERR; cerr<<YYERR; exit(-1); }
-int main() { env_init(); yyparse(); cout<<module.eval(glob)->dump(); return 0; }
+int main() { env_init(); yyparse(); cout<<unit.eval(glob)->dump(); return 0; }
 
 Sym::Sym(string T, string V) { tag=T; val=V; }
 Sym::Sym(string V):Sym("",V) {}
@@ -54,6 +54,8 @@ Sym* Fn::at(Sym*o) { return fn(o); }
 File::File(string V):Sym("file",V) {}
 Sym* File::file(Sym*o) { return new File(o->str()->val); }
 string File::tagval() { return tagstr(); }
+
+Module::Module(string V):Sym("module",V) {}
 
 void env_init() {
 	glob->par["file"] = new Fn("file",File::file);
