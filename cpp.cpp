@@ -27,6 +27,7 @@ Sym* Sym::lookup(string V) {
 
 Sym* Sym::eval(Sym*env) {
 	Sym* E = env->lookup(val); if (E) return E;
+	else if (tag=="") env->par[val]=new Var(this);		// forvard reg symbol
 	for (auto it=nest.begin(),e=nest.end();it!=e;it++)
 		(*it) = (*it)->eval(env);
 	return this; }
@@ -43,7 +44,7 @@ List::List():Sym("[","]") {}
 Op::Op(string V):Sym("op",V) {}
 Sym* Op::eval(Sym*env) {
 	Sym::eval(env);
-	if (val=="=") return nest[0]->eq(nest[1]);
+	if (val=="=") return nest[0]->eq(nest[1]->eval(env));
 	if (val=="@") return nest[0]->at(nest[1]);
 	return this;
 }
@@ -56,6 +57,12 @@ Sym* File::file(Sym*o) { return new File(o->str()->val); }
 string File::tagval() { return tagstr(); }
 
 Module::Module(string V):Sym("module",V) {}
+
+Var::Var(Sym*o):Sym("var",o->str()->val) { ptr=NULL; }
+Sym* Var::eq(Sym*o) { ptr=o; return o; }
+string Var::dump(int depth) { string S = Sym::dump(depth);
+	if (ptr) S += ptr->dump(depth+1);
+	return S; }
 
 void env_init() {
 	glob->par["file"] = new Fn("file",File::file);

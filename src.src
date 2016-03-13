@@ -8,4 +8,4 @@ src = file @ 'src.src'
 src = []
 
 make = file @ 'Makefile'
-
+ x=y y=x

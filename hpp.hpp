@@ -11,7 +11,7 @@ struct Sym {
 	string tag,val;
 	Sym(string,string); Sym(string);
 	virtual string tagval(); string tagstr(); 
-	string dump(int depth=0); string pad(int);
+	virtual string dump(int depth=0); string pad(int);
 	vector<Sym*> nest; void push(Sym*o);
 	map<string,Sym*> par; Sym* lookup(string);
 	virtual Sym* eval(Sym*env);
@@ -34,6 +34,8 @@ struct Fn: Sym { Fn(string,FN); FN fn; Sym*at(Sym*); };
 struct File: Sym { File(string); static Sym* file(Sym*); string tagval(); };
 
 struct Module: Sym { Module(string); };
+
+struct Var: Sym { Var(Sym*); Sym*ptr; Sym*eq(Sym*); string dump(int); };
 
 extern int yylex();
 extern int yylineno;
