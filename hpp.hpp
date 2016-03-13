@@ -16,6 +16,7 @@ struct Sym {
 	map<string,Sym*> par; Sym* lookup(string);
 	virtual Sym* eval(Sym*env);
 	virtual Sym* str();
+	virtual Sym* eq(Sym*);
 	virtual Sym* at(Sym*);
 };
 extern Sym* glob;
@@ -38,6 +39,7 @@ extern char* yytext;
 #define TOC(C,X) { yylval.o = new C(yytext); return X; }
 extern int yyparse();
 extern void yyerror(string);
+extern Sym module;
 #include "ypp.tab.hpp"
 
 #endif // _H_CONCEPT

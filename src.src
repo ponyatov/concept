@@ -1,6 +1,8 @@
 
-skelex = [ files bat gitignore ]
-files = [ src log ypp lpp hpp cpp ]
+skelex = [ files bat gitignore ] "lexical skeleton"
+files = [ src log ypp lpp hpp cpp make ] "files must be opened in editor tabs"
 
 src = file @ 'src.src'
+src = []
 
+make = file @ 'Makefile'

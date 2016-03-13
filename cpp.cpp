@@ -1,13 +1,15 @@
 #include "hpp.hpp"
 #define YYERR "\n\n"<<yylineno<<":"<<msg<<"["<<yytext<<"]\n\n"
 void yyerror(string msg) { cout<<YYERR; cerr<<YYERR; exit(-1); }
-int main() { env_init(); return yyparse(); }
+int main() { env_init(); yyparse(); cout<<module.eval(glob)->dump(); return 0; }
 
 Sym::Sym(string T, string V) { tag=T; val=V; }
 Sym::Sym(string V):Sym("",V) {}
 void Sym::push(Sym*o) { nest.push_back(o); }
 
 string Sym::dump(int depth) { string S = "\n" + pad(depth) + tagval();
+	for (auto pr=par.begin(),e=par.end();pr!=e;pr++)
+		S += "\n" + pad(depth+1) + pr->first + "=" + pr->second->tagval();
 	for (auto it=nest.begin(),e=nest.end();it!=e;it++)
 		S += (*it)->dump(depth+1);
 	return S; }
@@ -31,6 +33,7 @@ Sym* Sym::eval(Sym*env) {
 
 Sym* Sym::str() { return new Str(val); }
 Sym* Sym::at(Sym*o) { push(o); return this; }
+Sym* Sym::eq(Sym*o) { glob->par[val]=o; o->par["var"]=this; return o; }
 
 Str::Str(string V):Sym("str",V) {}
 string Str::tagval() { return tagstr(); }
@@ -40,6 +43,7 @@ List::List():Sym("[","]") {}
 Op::Op(string V):Sym("op",V) {}
 Sym* Op::eval(Sym*env) {
 	Sym::eval(env);
+	if (val=="=") return nest[0]->eq(nest[1]);
 	if (val=="@") return nest[0]->at(nest[1]);
 	return this;
 }

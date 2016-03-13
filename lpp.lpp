@@ -4,13 +4,17 @@ string LexString;
 %}
 %option noyywrap
 %option yylineno
-%x lexstring
+%x lexstring docstring
 %%
 [a-zA-Z0-9_]+		TOC(Sym,SYM)
 
 '					{BEGIN(lexstring); LexString="";}
 <lexstring>'		{BEGIN(INITIAL); yylval.o = new Str(LexString); return STR;}
 <lexstring>.		{LexString+=yytext[0];}
+
+\"					{BEGIN(docstring); LexString="";}
+<docstring>\"		{BEGIN(INITIAL); yylval.o = new Str(LexString); return DOC;}
+<docstring>.		{LexString+=yytext[0];}
 
 \[					TOC(Op,LQ)
 \]					TOC(Op,RQ)
